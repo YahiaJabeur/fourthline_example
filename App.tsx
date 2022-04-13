@@ -10,6 +10,9 @@
 
 import React from 'react';
 import {
+  Button,
+  NativeModules,
+  Platform,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -18,6 +21,7 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
+import {requestMultiple, PERMISSIONS} from 'react-native-permissions';
 
 import {
   Colors,
@@ -26,6 +30,7 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import options from './options.json';
 
 const Section: React.FC<{
   title: string;
@@ -62,6 +67,37 @@ const App = () => {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+  const requestPermissions = () => {
+    requestMultiple(
+      [Platform.OS === 'ios'
+        ? PERMISSIONS.IOS.CAMERA
+        : PERMISSIONS.ANDROID.CAMERA, PERMISSIONS.ANDROID.RECORD_AUDIO]
+    ).then(result => {
+      console.log(result);
+    });
+  };
+  const startSelfie = () => {
+    // const options = {
+    //   debugModeEnabled: true,
+    //   shouldRecordVideo: true,
+    //   includeManualSelfiePolicy: true,
+    //   livenessCheckType: true,
+    // };
+
+    NativeModules.Fourthline.startSelfie(JSON.stringify(options))
+      .then(result => {
+        // Extract and process information from the result String received in JSON format
+        // var jsonResult = JSON.parse(result);
+        console.log('response', result);
+        // ...
+      })
+      .catch(error => {
+        // Extract and process information from the error String received in JSON format
+        // var jsonError = JSON.parse(error);
+        console.log('error', error);
+      });
+  };
+
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
@@ -72,22 +108,10 @@ const App = () => {
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
+          }}></View>
+
+        <Button title="Selfie" onPress={startSelfie} />
+        <Button title="camera permission" onPress={requestPermissions} />
       </ScrollView>
     </SafeAreaView>
   );

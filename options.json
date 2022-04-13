@@ -1,0 +1,6 @@
+{
+  "debugModeEnabled": true,
+  "recordingType": "videoWithAudio",
+  "livenessCheckType": "headTurn",
+  "returnImagesAs": "base64"
+}
